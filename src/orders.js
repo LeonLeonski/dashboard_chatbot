@@ -48,6 +48,28 @@ export const GetOrders = ({state}) => {
                         <DetailView data={data} prefix={prefix}/>
                         </>
                     );
+                }else if(state === "customers"){
+
+                    return(
+                        <>
+                        <tr>
+
+                            <th scope="row">{data.cID}</th>
+                            <td>{data.pNumber}</td>
+                            <td>{data.orderDate}</td>
+                            <td>@{data.ordersValue}</td>
+                            <td>
+                                <a className="btn btn-primary" data-toggle="collapse" href={'#order'+ state + data.oID} aria-expanded="false" aria-controls={'order'+ state + data.oID}>View
+                                </a>
+                            </td>
+
+                        </tr>
+
+                        <DetailView data={data} prefix={state}/>
+
+
+                        </>
+                    )
                 }
             })}
         </>

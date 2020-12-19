@@ -31,13 +31,7 @@ function App() {
   );
 }
 class AuthedPage extends React.Component{
-    constructor(props) {
-        super(props);
-        console.log("constructor")
-    }
 render() {
-
-
     return (
         <div className="App">
             <div className="heading">
@@ -64,6 +58,10 @@ render() {
                         <a className="nav-link" id="history-tab" data-toggle="tab" href="#history" role="tab"
                            aria-controls="history" aria-selected="false">History</a>
                     </li>
+                    <li className="nav-item">
+                        <a className="nav-link" id="customers-tab" data-toggle="tab" href="#customers" role="tab"
+                           aria-controls="customers" aria-selected="false">Customers</a>
+                    </li>
                 </ul>
 
                 <div className="tab-content" id="myTabContent">
@@ -75,6 +73,9 @@ render() {
                     </div>
                     <div className="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
                         <OrdersContainer state={"all"} title={"All Orders"}/>
+                    </div>
+                    <div className="tab-pane fade" id="customers" role="tabpanel" aria-labelledby="customers-tab">
+                        <OrdersContainer state={"customers"} title={"All Customers"}/>
                     </div>
                 </div>
             </div>
@@ -237,10 +238,10 @@ class OrdersContainer extends React.Component {
                 <table className="table">
                     <thead className="thead-dark">
                     <tr>
-                        <th scope="col">Order ID</th>
+                        <th scope="col">{ this.props.state === "customers" ? (<span>Customer ID</span>) : (<span>Order Id</span>)}</th>
                         <th scope="col">Phone Number</th>
                         <th scope="col">Order Date</th>
-                        <th scope="col">Status</th>
+                        <th scope="col">{ this.props.state === "customers" ? (<span>Orders Value</span>) : (<span>Status</span>)}</th>
                         <th scope="col">Detail View</th>
                     </tr>
                     </thead>
