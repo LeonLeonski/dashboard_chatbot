@@ -1,9 +1,15 @@
 import React from "react";
-import "./App.css";
-import { data } from "./data.js";
+import "../App.css";
+import { data } from "../data.js";
 
 
 export const GetOrders = ({state}) => {
+
+
+
+    function onCheck(){
+        console.log("test");
+    }
     return (
         <>
             {data.map((data, key) => {
@@ -61,6 +67,7 @@ export const GetOrders = ({state}) => {
                             <td>
                                 <a className="btn btn-primary" data-toggle="collapse" href={'#order'+ state + data.oID} aria-expanded="false" aria-controls={'order'+ state + data.oID}>View
                                 </a>
+                                <input class="checkbox" value={data.pNumber} type="checkbox" aria-label="Checkbox for following text input"/>
                             </td>
 
                         </tr>
@@ -103,7 +110,7 @@ function getProducts(products, sort){
         pizzas.push(<tr><td>{product.pizza}</td></tr>);
         drinks.push(<tr><td>{product.drink}</td></tr>);
     })
-    if(sort == "pizzas"){
+    if(sort === "pizzas"){
         return pizzas;
     }else{
         return drinks;
