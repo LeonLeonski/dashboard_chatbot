@@ -1,3 +1,5 @@
+import xlsx from "xlsx"
+import { saveAs } from "file-saver";
 import React, {useState, useEffect} from "react";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
@@ -14,11 +16,13 @@ export function Users(props) {
             for (let i = 0; i < props.users.length; i++) {
                 let user = props.users[i]
 
-                content.push(<User id={user.id} name={user.data.name} phone={user.data.phone} role={user.data.role}
-                                   soId={user.data.soId}/>)
+                content.push(<User id={user.id} name={user.name} phone={user.phone} role={user.role}
+                                   soId={user.soId} key={user.id}/>)
             }
         }
     }
+
+    const handleExport = () => exportXLSX(props.users);
 
     prepareUsers();
 
@@ -28,6 +32,9 @@ export function Users(props) {
             <div>
                 <br/>
                 <p>This is a list off all the users that are currently able to interact with the bot. </p>
+                <Button variant="primary" onClick={handleExport}>Export Users</Button>
+                <br/>
+                <br/>
                 <Table className="table">
                     <thead className="thead-light">
                     <tr>
@@ -135,4 +142,37 @@ function UserModal(props) {
             </Modal>
         </>
     );
+}
+
+function exportXLSX(users) {
+    const retailers = users.filter(user => user.role === 'retailer');
+    const fsa = users.filter(user => user.role === 'fsa');
+    const so = users.filter(user => user.role === 'so');
+    const dealers = users.filter(user => user.role === 'dealer');
+    
+    const wb = xlsx.utils.book_new();
+    wb.SheetNames.push('Retailers');
+    wb.SheetNames.push('FSA');
+    wb.SheetNames.push('Sales Officer');
+    wb.SheetNames.push('Dealers');
+
+    const ws_retailers = xlsx.utils.json_to_sheet(retailers);
+    const ws_fsa = xlsx.utils.json_to_sheet(fsa);
+    const ws_so = xlsx.utils.json_to_sheet(so);
+    const ws_dealers = xlsx.utils.json_to_sheet(dealers);
+
+    wb.Sheets['Retailers'] = ws_retailers;
+    wb.Sheets['FSA'] = ws_fsa;
+    wb.Sheets['Sales Officer'] = ws_so;
+    wb.Sheets['Dealers'] = ws_dealers;
+
+    const wbout = xlsx.write(wb, {bookType:'xlsx', type:'binary'});
+    saveAs(new Blob([s2ab(wbout)], {type:"application/octet-stream"}), 'users.xlsx');
+}
+
+function s2ab(s) {
+    let buf = new ArrayBuffer(s.length);
+    let view = new Uint8Array(buf);
+    for (let i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
+    return buf;
 }
