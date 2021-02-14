@@ -1,30 +1,22 @@
 import './App.css';
 import React from "react";
-import { AuthedPage } from "./components/AuthedPage";
-import { UnAuthedPage } from "./components/UnAuthedPage";
-import firebase from "firebase";
 import {
-    FirebaseAuthProvider,
-    IfFirebaseAuthed,
-    IfFirebaseUnAuthed
-} from "@react-firebase/auth";
-import {config} from "./test-credentials.js";
+    HashRouter as Router,
+    Route,
+} from 'react-router-dom';
 
+import {AuthProvider} from './Context'
+import routes from "./Routing/routes";
 
 function App() {
+    const routeComponents = routes.map(({path, component}, key) => <Route exact path={path} component={component} key={key} />);
+
   return (
-      <>
-          <FirebaseAuthProvider {...config} firebase={firebase}>
-              <div>
-                  <IfFirebaseUnAuthed>
-                      <UnAuthedPage/>
-                  </IfFirebaseUnAuthed>
-                  <IfFirebaseAuthed>
-                      {() => <AuthedPage/>}
-                  </IfFirebaseAuthed>
-              </div>
-          </FirebaseAuthProvider>
-      </>
+      <AuthProvider>
+          <Router>
+              {routeComponents}
+          </Router>
+      </AuthProvider>
   );
 }
 export default App;

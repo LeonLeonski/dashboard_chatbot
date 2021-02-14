@@ -3,7 +3,7 @@ import "../App.css";
 import { data } from "../data.js";
 
 
-export const GetOrders = ({state}) => {
+export const GetUsers = ({state}) => {
 
 
 
