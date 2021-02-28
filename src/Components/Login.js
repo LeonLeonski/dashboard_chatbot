@@ -1,24 +1,45 @@
 import React, {useState} from "react";
 
-import { loginUserSuccess, useAuthState, useAuthDispatch } from '../Context'
+import { connect } from 'react-redux'
+import { loginUserSuccess } from '../redux/actions'
 
 const axios = require('axios');
 
-export function Login(props){
+class Login extends React.Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            email: '',
+            password: '',
+        };
 
-    const dispatch = useAuthDispatch()
+        this.login = this.login.bind(this);
+        this.success = this.success.bind(this);
+ 
+    }
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    async success(response) {
+        if (response.data != null) {
+            let payload = {tokenId: response.data.token};
 
-    const login = async () => {
+            try {
+                let response = await this.props.loginUserSuccess(payload)
+                if (!response.payload.tokenId) return
+                this.props.history.push('/users')
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    }
+
+    async login() {
         const headers = {
             'Content-Type': 'application/json'
         }
 
         const params = {
-            "email": email,
-            "password": password
+            "email": this.state.email,
+            "password": this.state.password
         }
 
         axios({
@@ -27,36 +48,35 @@ export function Login(props){
             timeout: 5000,
             headers: headers,
             data: params
-        }).then(async function (response){
-            if (response.data != null) {
-                let payload = {tokenId: response.data.token};
-
-                try {
-                    let response = await loginUserSuccess(dispatch, payload)
-                    if (!response.tokenId) return
-                    props.history.push('/dashboard')
-                } catch (error) {
-                    console.log(error)
-                }
-            }
-        }).catch(function (error){
+        }).then((response) => {
+            console.log(response);
+            this.success(response)
+        }    
+        ).catch(function (error){
             console.log(error);
         });
     }
 
-    return (
-        <div>
-            <div className="login-page">
-                <div className="form">
-                    <h2>Admin Interface</h2>
-                    <br/>
-                    <form className="login-form">
-                        <input type="text" id='email' onChange={() => setEmail(document.getElementById('email').value)} value={email} placeholder="E-mail"/>
-                        <input type="password" id='password' onChange={() => setPassword(document.getElementById('password').value)} value={password} placeholder="Password"/>
-                        <button type={"button"} onClick={login}>Login</button>
-                    </form>
+    render() {
+        return (
+            <div>
+                <div className="login-page">
+                    <div className="form">
+                        <h2>Admin Interface</h2>
+                        <br/>
+                        <form className="login-form">
+                            <input type="text" id='email' onChange={() => this.setState({email: document.getElementById('email').value})} value={this.state.email} placeholder="E-mail"/>
+                            <input type="password" id='password' onChange={() => this.setState({password: document.getElementById('password').value})} value={this.state.password} placeholder="Password"/>
+                            <button type={"button"} onClick={this.login}>Login</button>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
-    )
+        )
+    }
 };
+
+export default connect(
+    null,
+    { loginUserSuccess }
+  )(Login)

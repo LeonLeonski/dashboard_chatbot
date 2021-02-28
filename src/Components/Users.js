@@ -8,64 +8,190 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
-export function Users(props) {
-    let content = [];
+import {Navigation} from "./Navigation";
+import { connect } from 'react-redux'
 
-    const prepareUsers = () => {
-        if(props.users != null) {
-            for (let i = 0; i < props.users.length; i++) {
-                let user = props.users[i]
 
-                content.push(<User id={user.id} name={user.name} phone={user.phone} role={user.role}
-                                   soId={user.soId} key={user.id}/>)
+const axios = require('axios');
+
+class Users extends React.Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            users: [],
+        };
+
+        this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
+        this.sendBroadcastMessageToSelected = this.sendBroadcastMessageToSelected.bind(this);
+        this.loadUsers = this.loadUsers.bind(this);
+    }
+
+    //TODO check if user is signed in with this.props.tokenId
+
+    handleCheckboxChange (id) {
+        const newUsers = this.state.users.map((item) => {
+            if (item.id === id) {
+              const updatedUsers = {
+                ...item,
+                isSelected: !item.isSelected,
+              };
+       
+              return updatedUsers;
             }
+       
+            return item;
+          });
+       
+          this.setState({users: newUsers});
+      }
+
+    async sendBroadcastMessageToSelected () {
+        let selectedUsers = [];
+
+        this.state.users.forEach(( user, index ) => {
+            if (user.isSelected) {
+                selectedUsers.push(user.id);
+            }
+        });
+
+        if (selectedUsers.length > 0) {
+            console.log(selectedUsers);
+
+            let result = [];
+
+            const headers = {
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+
+            const params = {
+                "apiCall": "sendBroadcast",
+                "data": selectedUsers
+            }
+
+            await axios({
+                url: 'http://localhost:5001/chat-bot-app-staging-305209/us-central1/apiGateway',
+                //url: 'https://europe-west1-chat-bot-app-300216.cloudfunctions.net/getUsers',
+                method: 'POST',
+                timeout: 5000,
+                headers: headers,
+                data: "apiCall=getUsers"
+            }).then(function (response){
+                result = response.data;
+            }).catch(function (error){
+                console.log(error);
+            });
+
+            alert(result);
+        } else {
+            alert('no user selected');
         }
     }
 
-    const handleExport = () => exportXLSX(props.users);
+    async loadUsers () {
+        let result = [];
 
-    prepareUsers();
+        const headers = {
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
 
-   return (
-        <>
+        const params = {
+            "apiCall": "getUsers"
+        }
 
-            <div>
-                <br/>
-                <p>This is a list off all the users that are currently able to interact with the bot. </p>
-                <Button variant="primary" onClick={handleExport}>Export Users</Button>
-                <br/>
-                <br/>
-                <Table className="table">
-                    <thead className="thead-light">
-                    <tr>
-                        <th scope="col">Id</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Phone number</th>
-                        <th scope="col">Role</th>
-                        <th scope="col">SO ID</th>
-                        <th scope="col">More Details</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {content}
-                    </tbody>
-                </Table>
-            </div>
-        </>
-    );
+        await axios({
+            url: 'http://localhost:5001/chat-bot-app-staging-305209/us-central1/apiGateway',
+            //url: 'https://europe-west1-chat-bot-app-300216.cloudfunctions.net/getUsers',
+            method: 'POST',
+            timeout: 5000,
+            headers: headers,
+            data: "apiCall=getUsers"
+        }).then(function (response){
+            result = response.data;
+        }).catch(function (error){
+            console.log(error);
+        });
+
+        this.setState({users: result});
+    }
+    
+
+
+    handleExport = () => exportXLSX(this.props.users);
+
+    componentDidMount() {
+        this.loadUsers();
+    }
+
+   render() {
+       let content = [];
+
+       this.state.users.forEach(( user, index ) => {
+        content.push(<User user={user} onCheckboxChange={this.handleCheckboxChange} key={user.id} index={index} />);
+       });
+
+       return (
+            <>
+                <div className="App">
+                    <Navigation />
+                    <Container>
+                        <Row className="justify-content-center" id="users">
+                            <div>
+                                <br/>
+                                <p>This is a list off all the users that are currently able to interact with the bot. </p>
+                                <Button variant="primary" onClick={this.handleExport}>Export Users</Button>
+                                <br/>
+                                <Button variant="primary" onClick={this.sendBroadcastMessageToSelected}>Send broadcast to selected users</Button>
+                                <br/>
+                                <br/>
+                                <Table className="table">
+                                    <thead className="thead-light">
+                                    <tr>
+                                        <th scope="col">Select</th>
+                                        <th scope="col">Id</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Phone number</th>
+                                        <th scope="col">Role</th>
+                                        <th scope="col">SO ID</th>
+                                        <th scope="col">More Details</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        {content}
+                                    </tbody>
+                                </Table>
+                            </div>
+                        </Row>
+                    </Container>
+                </div>
+            </>
+        );
+    }
 }
 
+const mapStateToProps = state => ({
+    tokenId: state.tokenId,
+  })
+  
+export default connect(mapStateToProps, null)(Users);
+
 export function User(props) {
+    console.log(props.user);
     return (
         <tr>
-            <th scope="row">{props.id}</th>
-            <td>{props.name}</td>
-            <td>{props.phone}</td>
-            <td>{props.role}</td>
-            <td>{props.soId}</td>
+             <th><input
+                            name="selectedUser"
+                            type="checkbox"
+                            checked={props.user.selected}
+                            onChange={() => props.onCheckboxChange(props.user.id)} />
+            </th>
+            <th scope="row">{props.user.id}</th>
+            <td>{props.user.name}</td>
+            <td>{props.user.phone}</td>
+            <td>{props.user.role}</td>
+            <td>{props.user.soId}</td>
             <td>
-                <UserModal id={props.id} name={props.name} phone={props.phone} role={props.role}
-                           soId={props.soId}>Show details</UserModal>
+                <UserModal id={props.user.id} name={props.user.name} phone={props.user.phone} role={props.user.role}
+                           soId={props.user.soId}>Show details</UserModal>
             </td>
         </tr>
     )
