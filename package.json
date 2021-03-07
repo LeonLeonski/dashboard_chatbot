@@ -4,6 +4,9 @@
   "private": true,
   "homepage": "http://mcomtech.ch/Chatbot",
   "dependencies": {
+    "@emotion/react": "^11.1.5",
+    "@emotion/styled": "^11.1.5",
+    "@tarragon/swipeable-tabs": "^0.1.11",
     "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
     "file-saver": "^2.0.5",
