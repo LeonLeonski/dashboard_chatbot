@@ -8,6 +8,7 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import {Tabs, Tab} from "@tarragon/swipeable-tabs";
+import Icon from 'react-web-vector-icons';
 
 import {Navigation} from "./Navigation";
 import { connect } from 'react-redux'
@@ -209,11 +210,12 @@ class FSA extends React.Component {
                     <div style={{backgroundColor: 'grey', height: '50px'}}>
                         <h3 style={{textAlign: 'right', fontWeight: 'bold', padding: '8px'}}>Lafarge Logo</h3>
                     </div>
-                    <div className="w3-container">
+                    <div style={{position: 'absolute', zIndex: '0', left: 0, right: 0}} className="w3-container">
                         <div style={{height: '100px'}}>
                             <h2 style={{textAlign: 'left', margin: '10px', fontWeight: 'bold'}}>Orders</h2>
-                            <input type='text' style={{position: 'absolute', width: '318px', height: '43px', left: '29px', top: '110px', backgroundColor: '#CFCECE', borderRadius: '5px'}}></input>
+                            <input type='text' placeholder="&#xF002; Search" style={{fontFamily: "Arial, FontAwesome", position: 'absolute', width: '318px', height: '43px', left: '29px', top: '70px', backgroundColor: '#CFCECE', borderRadius: '5px'}}></input>
                         </div>
+                        <hr />
                         <Tabs value={this.state.selectedTab} onChange={this.changeTab} styleProps={{barColor: 'white', headerTextColor: 'black', inkBarColor: 'white', activeInkBarColor: 'black', selectedHeaderTextColor: 'black'}}>
                             <Tab label="Pending" key={0}>
                                 <ResponsiveTable list={this.state.orders} />
@@ -225,6 +227,25 @@ class FSA extends React.Component {
                                 <ResponsiveTable list={this.state.orders} />
                             </Tab>
                         </Tabs>
+                    </div>
+                    <div style={{position: 'absolute', zIndex: '99', left: 0, right: 0, top: 50, bottom: 0, backgroundColor: 'white'}} className="w3-container">
+                        <div style={{position: 'absolute', left: 0, right: 0, height: '110px', borderBottom: '2px solid black'}}>
+                            <p style={{ fontSize: '24px', top: '5px', position: 'absolute', left: '10px' }}><i className="fa fa-angle-left"></i> Back</p>
+                            <h2 style={{position: 'absolute', top: '40px', left: '10px', textAlign: 'left', margin: '10px', fontWeight: 'bold'}}>Pending</h2>
+                        </div>
+                        <div style={{position: 'absolute', top: '130px', left: 0, right: 0, padding: '0 20px'}}>
+                            <p style={{ textAlign: 'left', fontSize: '20px' }}>Test Retailer</p>
+                            <hr style={{ height: '1px', backgroundColor: 'black'}} />
+                            <p style={{ textAlign: 'left', fontSize: '24px' }}>Products ordered</p>
+                            <p style={{ textAlign: 'left', fontSize: '20px', position: 'absolute', left: '20px' }}>Classic</p><p style={{ textAlign: 'right', fontSize: '20px' }}>400 bags</p>
+                            <p style={{ textAlign: 'left', fontSize: '20px', position: 'absolute', left: '20px'}}>Supaset</p><p style={{ textAlign: 'right', fontSize: '20px' }}>200 bags</p>
+                            <hr style={{ height: '1px', backgroundColor: 'black'}}/>
+                            <p style={{ textAlign: 'left', fontSize: '24px' }}>Delivery adress</p>
+                            <p style={{ textAlign: 'left', fontSize: '20px', position: 'absolute', left: '20px' }}>Test address....</p>
+                        </div>
+                        <div style={{backgroundColor: 'grey', height: '50px', position: 'absolute', bottom: 0, left: 0, right: 0}}>
+                            <h3 style={{textAlign: 'center', fontWeight: 'bold', padding: '8px', color: 'white' }}>Fulfill Order</h3>
+                        </div>
                     </div>
                 </div>
             </>
@@ -271,6 +292,7 @@ class ResponsiveTable extends React.Component {
                     <p style={{ fontSize: '20px', top: '0px', position: 'absolute', left: '10px' }}>{item.name}</p>
                     <p style={{ fontSize: '16px', top: '30px', position: 'absolute', left: '10px' }}>{item.date}</p>
                     <p style={{ fontSize: '20px', top: '12px', position: 'absolute', right: '50px' }}>{item.count} bags</p>
+                    <i style={{ fontSize: '24px', top: '15px', position: 'absolute', right: '20px' }} className="fa fa-angle-right"></i>
                 </div>
                 <hr />
             </div>)}
